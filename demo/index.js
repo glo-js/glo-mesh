@@ -13,26 +13,23 @@ var createTexture = require('glo-texture/2d')
 var createContext = require('get-canvas-context')
 var loadImage = require('img')
 var material = require('./mat-basic')
-var transpile = require('./glsl-100-to-300')
+var defines = require('glsl-inject-defines')
 
 var gl = createContext('webgl2')
-// var webgl2 = true
-// if (!gl) {
-//   webgl2 = false
-//   gl = createContext('webgl')
-// }
-// console.log("WebGL2?", webgl2)
+var webgl2 = true
+if (!gl) {
+  webgl2 = false
+  gl = createContext('webgl')
+}
 
 var canvas = document.body.appendChild(gl.canvas)
-
-// var transpiled = webgl2
-//   ? transpile(material.vertex, material.fragment)
-//   : material
 
 var shader = createShader(gl, {
   name: material.name,
   vertex: material.vertex,
-  fragment: material.fragment
+  fragment: webgl2 ? defines(material.fragment, {
+    WEBGL2: true,
+  }) : material.fragment
 })
 
 var torus = require('torus-mesh')()
