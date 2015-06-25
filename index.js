@@ -5,9 +5,8 @@ var fromGLType = require('gl-to-dtype')
 var createBuffer = require('./lib/buffer')
 var createVBO = require('./lib/vertex-buffer-object')
 
-// VAO works but is not WebGL2 compliant and
-// may not really be necessary for most applications
-var createVAO = require('./lib/vertex-array-object')
+// ideally, allow this to be optional
+// var createVAO = require('./lib/vertex-array-object')
 
 var indexOfName = require('indexof-property')('name')
 var defined = require('defined')
@@ -23,7 +22,7 @@ function AttributeMesh (gl, opt) {
   this._elements = null
   this._elementsSize = null
   this._elementsType = null
-  this.bindings = opt.vao ? createVAO(gl) : createVBO(gl)
+  this.bindings = createVBO(gl)
 }
 
 Object.defineProperty(AttributeMesh.prototype, 'count', getter(function () {

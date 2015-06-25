@@ -1,18 +1,39 @@
-// testing low level GL utils
+// Note: This demo uses WebGL2 shaders.
 
+// Testing some of the low-level utils.
+// The typical end-user experience will not
+// look like this, but it's good to know you
+// can drop down if need be.
+
+var createMesh = require('../')
 var createCamera = require('perspective-camera')
 var createApp = require('canvas-loop')
 var createShader = require('glo-shader')
 var createTexture = require('glo-texture/2d')
-var createMesh = require('../')
 var createContext = require('get-canvas-context')
-// var baboon = require('baboon-image-uri')
 var loadImage = require('img')
 var material = require('./mat-basic')
+var transpile = require('./glsl-100-to-300')
 
 var gl = createContext('webgl2')
+// var webgl2 = true
+// if (!gl) {
+//   webgl2 = false
+//   gl = createContext('webgl')
+// }
+// console.log("WebGL2?", webgl2)
+
 var canvas = document.body.appendChild(gl.canvas)
-var shader = createShader(gl, material)
+
+// var transpiled = webgl2
+//   ? transpile(material.vertex, material.fragment)
+//   : material
+
+var shader = createShader(gl, {
+  name: material.name,
+  vertex: material.vertex,
+  fragment: material.fragment
+})
 
 var torus = require('torus-mesh')()
 var model = require('gl-mat4/identity')([])
@@ -61,7 +82,6 @@ function render () {
   shader.uniforms.view(camera.view)
   shader.uniforms.model(model)
   shader.uniforms.iChannel0(0)
-  // shader.uniforms.tint([1, 1, 1, 1])
 
   tex.bind()
   mesh.bind(shader)

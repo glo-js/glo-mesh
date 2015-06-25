@@ -30,6 +30,8 @@
     "gl-mat4": "^1.1.4",
     "glo-shader": "^1.0.1",
     "glo-texture": "^1.0.0",
+    "glsl-token-string": "^1.0.1",
+    "glsl-tokenizer": "^2.0.2",
     "glslify": "^2.1.2",
     "hihat": "^1.2.1",
     "icosphere": "^1.0.0",

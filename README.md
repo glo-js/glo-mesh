@@ -2,7 +2,7 @@
 
 [![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
 
-a mesh abstraction for WebGL
+A low-level mesh abstraction for WebGL.
 
 ## Usage
 
