@@ -1,0 +1,72 @@
+{
+  "name": "glo-mesh",
+  "version": "1.0.0",
+  "description": "a mesh abstraction for WebGL",
+  "main": "index.js",
+  "license": "MIT",
+  "author": {
+    "name": "Matt DesLauriers",
+    "email": "dave.des@gmail.com",
+    "url": "https://github.com/mattdesl"
+  },
+  "dependencies": {
+    "array-pack-2d": "^0.1.1",
+    "defined": "^1.0.0",
+    "dprop": "^1.0.0",
+    "dtype": "^2.0.0",
+    "get-canvas-context": "^1.0.1",
+    "gl-extension": "^1.0.1",
+    "gl-to-dtype": "^1.1.0",
+    "indexof-property": "^1.1.1",
+    "object-assign": "^3.0.0"
+  },
+  "devDependencies": {
+    "baboon-image-uri": "^1.0.1",
+    "browserify": "^10.2.4",
+    "budo": "^4.1.0",
+    "canvas-loop": "^1.0.4",
+    "garnish": "^2.1.3",
+    "gl-buffer-snoop": "^1.0.0",
+    "gl-mat4": "^1.1.4",
+    "glo-shader": "^1.0.1",
+    "glo-texture": "^1.0.0",
+    "glslify": "^2.1.2",
+    "hihat": "^1.2.1",
+    "icosphere": "^1.0.0",
+    "img": "^1.0.0",
+    "perspective-camera": "^1.0.1",
+    "smokestack": "^3.3.0",
+    "tape": "^4.0.0",
+    "torus-mesh": "^1.0.0",
+    "webgl-context": "^2.2.0"
+  },
+  "scripts": {
+    "test": "node test.js",
+    "start": "budo demo/index.js --live --verbose -- -t glslify | garnish"
+  },
+  "keywords": [
+    "mesh",
+    "gl",
+    "webgl",
+    "glo",
+    "glojs",
+    "glo-js",
+    "light",
+    "lighting",
+    "3d",
+    "2d",
+    "vbo",
+    "vao",
+    "vertex",
+    "buffer",
+    "object"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/glo-js/glo-mesh.git"
+  },
+  "homepage": "https://github.com/glo-js/glo-mesh",
+  "bugs": {
+    "url": "https://github.com/glo-js/glo-mesh/issues"
+  }
+}
