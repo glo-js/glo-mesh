@@ -13,26 +13,23 @@ var createTexture = require('glo-texture/2d')
 var createContext = require('get-canvas-context')
 var loadImage = require('img')
 var material = require('./mat-basic')
-var defines = require('glsl-inject-defines')
+var assign = require('object-assign')
 
-var gl = createContext('webgl2')
-var webgl2 = true
-if (!gl) {
-  webgl2 = false
-  gl = createContext('webgl')
-}
+var gl = createContext('webgl')
 
 var canvas = document.body.appendChild(gl.canvas)
 
-var shader = createShader(gl, {
-  name: material.name,
-  vertex: material.vertex,
-  fragment: webgl2 ? defines(material.fragment, {
-    WEBGL2: true,
-  }) : material.fragment
-})
+var shader = createShader(gl, assign({
+  // we can hard-code some defaults here
+  uniforms: [
+    { type: 'vec2', name: 'repeat', value: [ 8, 8 ] },
+    { type: 'sampler2D', name: 'iChannel0', value: 0 }
+  ]
+}, material))
 
-var torus = require('torus-mesh')()
+// var torus = require('primitive-sphere')(1)
+// var torus = require('primitive-icosphere')(1)
+var torus = require('torus-mesh')({ majorRadius: 1, minorRadius: 0.5 })
 var model = require('gl-mat4/identity')([])
 
 var camera = createCamera()
@@ -45,36 +42,46 @@ var mesh = createMesh(gl, {
   .attribute('normal', torus.normals)
   .elements(torus.cells)
 
+var time = 0
 var tex
 var app = createApp(canvas)
   .on('tick', render)
 
-loadImage('test.png', function (err, img) {
-  if (err) throw err
-  tex = createTexture(gl, img, [ img.width, img.height ], {
+// loadImage(require('baboon-image-uri'), function (err, img) {
+//   if (err) throw err
+  var img = [
+    [0xff, 0xff, 0xff, 0xff], [0xcc, 0xcc, 0xcc, 0xff],
+    [0xcc, 0xcc, 0xcc, 0xff], [0xff, 0xff, 0xff, 0xff]
+  ]
+  tex = createTexture(gl, img, [ 2, 2 ], {
     wrap: gl.REPEAT,
-    minFilter: gl.LINEAR_MIPMAP_LINEAR,
-    magFilter: gl.LINEAR
-  }).generateMipmap()
+    minFilter: gl.NEAREST,
+    magFilter: gl.NEAREST
+  })
   app.start()
-})
+// })
 
-function render () {
+function render (dt) {
+  time += dt / 1000
+
   var width = gl.drawingBufferWidth
   var height = gl.drawingBufferHeight
   gl.viewport(0, 0, width, height)
   gl.clearColor(0, 0, 0, 1)
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
   gl.enable(gl.DEPTH_TEST)
-  gl.enable(gl.CULL_FACE)
+  gl.disable(gl.CULL_FACE)
 
   camera.viewport = [0, 0, width, height]
   camera.identity()
-  camera.translate([ -3, 0, -4 ])
+  var angle = time
+  var distance = 5
+  camera.translate([ Math.cos(angle) * distance, 0, Math.sin(angle) * distance ])
   camera.lookAt([ 0, 0, 0 ])
   camera.update()
 
   shader.bind()
+  // shader.uniforms.repeat([ 8, 8 ])
   shader.uniforms.projection(camera.projection)
   shader.uniforms.view(camera.view)
   shader.uniforms.model(model)
