@@ -14,10 +14,13 @@
     "defined": "^1.0.0",
     "dprop": "^1.0.0",
     "dtype": "^2.0.0",
+    "flatten-vertex-data": "^1.0.0",
     "get-canvas-context": "^1.0.1",
     "gl-extension": "^1.0.1",
     "gl-to-dtype": "^1.1.0",
     "indexof-property": "^1.1.1",
+    "is-typed-array": "^1.0.2",
+    "is-typedarray": "^1.0.0",
     "object-assign": "^3.0.0"
   },
   "devDependencies": {

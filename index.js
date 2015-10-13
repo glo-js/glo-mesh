@@ -1,6 +1,7 @@
 var assign = require('object-assign')
-var pack = require('array-pack-2d')
-var dtype = require('dtype')
+
+var flattenVertexData = require('flatten-vertex-data')
+var isTypedArray = require('is-typedarray')
 var fromGLType = require('gl-to-dtype')
 var createBuffer = require('./lib/buffer')
 var createVBO = require('./lib/vertex-buffer-object')
@@ -30,20 +31,33 @@ Object.defineProperty(AttributeMesh.prototype, 'count', getter(function () {
   if (this._elements) {
     return this._elements.length
   } else {
-    if (this.attributes.length === 0) return 0
+    if (this.attributes.length === 0 || this.attributes[0].size === 0) {
+      return 0
+    }
     return this.attributes[0].buffer.length / this.attributes[0].size
   }
 }))
 
 assign(AttributeMesh.prototype, {
+  dispose: function () {
+    if (this._elements) this._elements.dispose()
+    if (this.attributes) {
+      this.attributes.forEach(function (attrib) {
+        attrib.dispose()
+      })
+    }
+    this._elements = null
+    this._dirty = true
+    this.attributes.length = 0
+  },
 
-  bind: function bind (shader) {
+  bind: function (shader) {
     if (!shader) {
       throw new Error('must provide shader to mesh bind()')
     }
 
     if (this._dirty) {
-      if (this.attributes) {
+      if (process.env.NODE_ENV !== 'production') {
         for (var i = 0; i < this.attributes.length; i++) {
           var name = this.attributes[i].name
           var attrib = shader.attributes[name]
@@ -61,7 +75,7 @@ assign(AttributeMesh.prototype, {
     return this
   },
 
-  unbind: function unbind (shader) {
+  unbind: function (shader) {
     if (!shader) {
       throw new Error('must provide shader to mesh unbind()')
     }
@@ -70,14 +84,14 @@ assign(AttributeMesh.prototype, {
     return this
   },
 
-  draw: function draw (mode, count, offset) {
+  draw: function (mode, count, offset) {
     count = defined(count, this.count)
     this.bindings.draw(mode, count, offset)
     return this
   },
 
   // replaces attribute
-  attribute: function attribute (name, data, opt) {
+  attribute: function (name, data, opt) {
     var attribIdx = indexOfName(this.attributes, name)
     var attrib = attribIdx === -1 ? null : this.attributes[attribIdx]
     if (typeof data === 'undefined') { // getter
@@ -99,6 +113,11 @@ assign(AttributeMesh.prototype, {
       }, opt)
       this.attributes.push(attrib)
     } else { // update existing
+      buffer = attrib.buffer
+      // dispose old buffer as it's being replaced
+      if (buffer && attrib.buffer && buffer !== attrib.buffer) {
+        buffer.dispose()
+      }
       // mutate existing attribute info like stride/etc
       assign(attrib, opt)
       buffer.usage = defined(opt.usage, buffer.usage)
@@ -109,7 +128,7 @@ assign(AttributeMesh.prototype, {
     return this
   },
 
-  elements: function elements (data, opt) {
+  elements: function (data, opt) {
     if (typeof data === 'undefined') { // getter
       return this._elements
     }
@@ -117,13 +136,14 @@ assign(AttributeMesh.prototype, {
     opt = opt || {}
     var gl = this.gl
     var size = opt.size || guessSize(data, 3)
-    var array = unroll(data, fromGLType(opt.type) || 'uint16')
+    var defaultType = opt.type || 'uint16'
+    var array = unroll(data, fromGLType(defaultType) || defaultType)
 
     if (this._elements) { // update existing
       this._elementsType = opt.type
       this._elements.usage = defined(opt.usage, this._elements.usage)
       this._elementsSize = size
-      this._elements.update()
+      this._elements.update(array)
     } else { // create new element buffer
       this._elementsSize = defined(opt.size, this._elementsSize)
       this._elements = createBuffer(gl, array, gl.ELEMENT_ARRAY_BUFFER, opt.usage)
@@ -142,13 +162,7 @@ function guessSize (data, defaultSize) {
 }
 
 function unroll (data, type) {
-  if (Array.isArray(data)) { // plain array
-    if (Array.isArray(data[0])) { // nested array
-      return pack(data, type)
-    } else { // flat array
-      return new (dtype(type))(data)
-    }
-  } else { // assume typed array already
-    return data
-  }
+  return isTypedArray(data)
+      ? data
+      : flattenVertexData(data, type)
 }
