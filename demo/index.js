@@ -22,8 +22,8 @@ var canvas = document.body.appendChild(gl.canvas)
 var shader = createShader(gl, assign({
   // we can hard-code some defaults here
   uniforms: [
-    { type: 'vec2', name: 'repeat', value: [ 8, 8 ] },
-    { type: 'sampler2D', name: 'iChannel0', value: 0 }
+    { type: 'vec2', name: 'repeat' },
+    { type: 'sampler2D', name: 'iChannel0' }
   ]
 }, material))
 
@@ -81,7 +81,7 @@ function render (dt) {
   camera.update()
 
   shader.bind()
-  // shader.uniforms.repeat([ 8, 8 ])
+  shader.uniforms.repeat([ 8, 8 ])
   shader.uniforms.projection(camera.projection)
   shader.uniforms.view(camera.view)
   shader.uniforms.model(model)

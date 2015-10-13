@@ -12,16 +12,17 @@ var indexOfName = require('indexof-property')('name')
 var defined = require('defined')
 var getter = require('dprop')
 
-module.exports = function createMesh (gl, opt) {
-  return new AttributeMesh(gl, opt)
+module.exports = function createMesh (gl) {
+  return new AttributeMesh(gl)
 }
 
-function AttributeMesh (gl, opt) {
+function AttributeMesh (gl) {
   this.gl = gl
   this.attributes = []
   this._elements = null
   this._elementsSize = null
   this._elementsType = null
+  this._dirty = true
   this.bindings = createVBO(gl)
 }
 
@@ -42,11 +43,13 @@ assign(AttributeMesh.prototype, {
     }
 
     if (this._dirty) {
-      for (var i = 0; i < this.attributes.length; i++) {
-        var name = this.attributes[i].name
-        var attrib = shader.attributes[name]
-        if (!attrib || typeof attrib.location !== 'number') {
-          console.warn("Specified shader does not have an attribute '" + name + "'")
+      if (this.attributes) {
+        for (var i = 0; i < this.attributes.length; i++) {
+          var name = this.attributes[i].name
+          var attrib = shader.attributes[name]
+          if (!attrib || typeof attrib.location !== 'number') {
+            console.warn("Specified shader does not have an attribute '" + name + "'")
+          }
         }
       }
 
