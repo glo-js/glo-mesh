@@ -2,10 +2,11 @@ var test = require('tape')
 
 var createBuffer = require('../lib/buffer')
 var createContext = require('webgl-context')
+var snoop = require('gl-buffer-snoop')
 
 test('should create array buffer', function (t) {
   var gl = createContext()
-  require('gl-buffer-snoop')(gl)
+  snoop(gl)
 
   var data = new Float32Array([ 1, 1, 0 ])
   var buffer = createBuffer(gl, data)

@@ -114,7 +114,8 @@ assign(AttributeMesh.prototype, {
       buffer = createBuffer(gl, array, gl.ARRAY_BUFFER, opt.usage)
       attrib = assign({
         name: name,
-        size: size
+        size: size,
+        usage: gl.STATIC_DRAW
       }, opt, { buffer: buffer })
       this.attributes.push(attrib)
     } else { // update existing
@@ -162,8 +163,8 @@ function guessSize (data, defaultSize) {
   return defaultSize
 }
 
-function unroll (data, type) {
+function unroll (data, type, size) {
   return isTypedArray(data)
       ? data
-      : flattenVertexData(data, type)
+      : flattenVertexData(data, type, size)
 }
