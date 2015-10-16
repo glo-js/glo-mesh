@@ -39,15 +39,21 @@ Object.defineProperty(AttributeMesh.prototype, 'count', getter(function () {
 }))
 
 assign(AttributeMesh.prototype, {
+
   dispose: function () {
-    if (this._elements) this._elements.dispose()
+    if (this._elements) {
+      this._elements.dispose()
+    }
     if (this.attributes) {
       this.attributes.forEach(function (attrib) {
-        attrib.dispose()
+        if (attrib.buffer) attrib.buffer.dispose()
       })
     }
-    this._elements = null
+    this.bindings.dispose()
     this._dirty = true
+    this._elements = null
+    this._elementsSize = null
+    this._elementsType = null
     this.attributes.length = 0
   },
 
@@ -108,18 +114,13 @@ assign(AttributeMesh.prototype, {
       buffer = createBuffer(gl, array, gl.ARRAY_BUFFER, opt.usage)
       attrib = assign({
         name: name,
-        buffer: buffer,
         size: size
-      }, opt)
+      }, opt, { buffer: buffer })
       this.attributes.push(attrib)
     } else { // update existing
       buffer = attrib.buffer
-      // dispose old buffer as it's being replaced
-      if (buffer && attrib.buffer && buffer !== attrib.buffer) {
-        buffer.dispose()
-      }
       // mutate existing attribute info like stride/etc
-      assign(attrib, opt)
+      assign(attrib, opt, { buffer: buffer })
       buffer.usage = defined(opt.usage, buffer.usage)
       buffer.update(array)
     }
