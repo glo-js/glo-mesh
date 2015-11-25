@@ -98,6 +98,7 @@ assign(AttributeMesh.prototype, {
     } else { // update existing
       // mutate existing attribute info like stride/etc
       assign(attrib, opt)
+      buffer = attrib.buffer
       buffer.usage = defined(opt.usage, buffer.usage)
       buffer.update(array)
     }
