@@ -15,12 +15,14 @@ var loadImage = require('img')
 var material = require('./mat-basic')
 var assign = require('object-assign')
 
-var gl = createContext('webgl')
-
+// setup our a WebGL canvas
+var gl = createContext('webgl', {
+  antialias: true
+})
 var canvas = document.body.appendChild(gl.canvas)
 
+// Create a new shader
 var shader = createShader(gl, assign({
-  // we can hard-code some defaults here
   uniforms: [
     { type: 'vec2', name: 'repeat' },
     { type: 'sampler2D', name: 'iChannel0' }
@@ -47,19 +49,29 @@ var tex
 var app = createApp(canvas)
   .on('tick', render)
 
-// loadImage(require('baboon-image-uri'), function (err, img) {
-//   if (err) throw err
-  var img = [
+// pixel data or image
+var useTexture = false
+if (useTexture) {
+  var uri = require('baboon-image-uri')
+  loadImage(uri, function (err, img) {
+    if (err) throw err
+    setupTexture(img, [ img.width, img.height ])
+  })
+} else {
+  setupTexture([
     [0xff, 0xff, 0xff, 0xff], [0xcc, 0xcc, 0xcc, 0xff],
     [0xcc, 0xcc, 0xcc, 0xff], [0xff, 0xff, 0xff, 0xff]
-  ]
-  tex = createTexture(gl, img, [ 2, 2 ], {
+  ], [ 2, 2 ])
+}
+
+function setupTexture (img, size) {
+  tex = createTexture(gl, img, size, {
     wrap: gl.REPEAT,
     minFilter: gl.NEAREST,
     magFilter: gl.NEAREST
   })
   app.start()
-// })
+}
 
 function render (dt) {
   time += dt / 1000
