@@ -31,7 +31,7 @@ test('should create array buffer', function (t) {
   t.equal(mesh.attributes[0].size, 2, 'maintains size')
   
   gpuData = gl.getBufferData(mesh.attributes[0].buffer.handle)
-  t.deepEqual(new Float32Array(gpuData.buffer), new Float32Array([3, 2, 4, 3, 5]), 'saves buffer to GPU')
+  t.deepEqual(new Float32Array(gpuData.buffer), new Float32Array([3, 2, 1, 4, 3, 5]), 'saves buffer to GPU')
   
   t.end()
 })
