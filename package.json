@@ -20,12 +20,12 @@
     "object-assign": "^3.0.0"
   },
   "devDependencies": {
-    "get-canvas-context": "^1.0.1",
     "baboon-image-uri": "^1.0.1",
     "browserify": "^10.2.4",
     "budo": "^4.1.0",
     "canvas-loop": "^1.0.4",
     "garnish": "^2.1.3",
+    "get-canvas-context": "^1.0.1",
     "gl-buffer-snoop": "^1.0.0",
     "gl-mat4": "^1.1.4",
     "glo-shader": "^1.0.1",
@@ -38,12 +38,13 @@
     "img": "^1.0.0",
     "perspective-camera": "^1.0.1",
     "smokestack": "^3.3.0",
+    "tap-closer": "^1.0.0",
     "tape": "^4.0.0",
     "torus-mesh": "^1.0.0",
     "webgl-context": "^2.2.0"
   },
   "scripts": {
-    "test": "browserify test/*.js | smokestack --timeout=2000",
+    "test": "browserify test/*.js | tap-closer | smokestack",
     "start": "budo demo/index.js --live --verbose -- -t glslify | garnish"
   },
   "keywords": [
